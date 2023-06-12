@@ -553,7 +553,14 @@ class ApiClient(object):
             if k in collection_formats:
                 collection_format = collection_formats[k]
                 if collection_format == 'multi':
-                    new_params.extend((k, value) for value in v)
+                    for value in v:
+                        if isinstance(value, (int, float)):
+                            value = str(value)
+                        if isinstance(value, bool):
+                            value = str(value).lower()
+                        if isinstance(value, dict):
+                            value = json.dumps(value)
+                        new_params.append((k, value))
                 else:
                     if collection_format == 'ssv':
                         delimiter = ' '
